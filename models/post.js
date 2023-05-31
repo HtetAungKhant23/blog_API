@@ -38,3 +38,5 @@ const postSchema = new Schema({
         required: [true, 'post image is required!']
     }
 }, {timestamps: true});
+
+module.exports = mongoose.model('Post', postSchema);
