@@ -22,6 +22,8 @@ exports.signup = async (req, res, next) => {
             password: hashedPw
         });
 
+        console.log(user);
+
         res.status(201).json({
             message: 'successfully sign up!',
             user: user
@@ -52,5 +54,18 @@ exports.signin = async (req, res, next) => {
         lastName: user.lastName,
         eamil: user.email,
         token: generateToken(user._id)
+    });
+}
+
+exports.profile = async (req, res, next) => {
+    const {id} = req.params;
+    const user = await User.findById(id);
+    if(!user){
+        res.status(200).json({
+            message: 'user not found!'
+        });
+    }
+    res.status(200).json({
+        user: user
     });
 }

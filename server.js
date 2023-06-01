@@ -4,9 +4,7 @@ const dbConnect = require('./configs/dbConnect');
 
 const start = async () => {
     try {
-        console.log('starting...');
         const connected = await dbConnect();
-        console.log(connected);
         if (!connected) {
             throw new Error('database connection failed!');
         }
@@ -15,7 +13,6 @@ const start = async () => {
             console.log(`server is running at ${process.env.PORT} ...`);
         });
     } catch (err) {
-        console.log('hihi');
         console.log(err.message);
     }
 }

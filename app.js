@@ -1,6 +1,4 @@
 const express = require('express');
-const errorHandler = require('./middlewares/errorHandler');
-const cors = require('./middlewares/corsErrorHandler');
 
 const app = express();
 
@@ -10,13 +8,21 @@ const commentRoutes = require('./routes/comment/commentRoute');
 const categoryRoutes = require('./routes/category/categoryRoute');
 
 app.use(express.json());
-app.use(cors);
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Method', 'GET,POST,PATCH,PUT,DELETE');
+    res.setHeader('Access-Control-Allow-Header', 'Content-Type, Authorization');
+    next();
+});
 
 app.use('/api/user', userRoutes);
-app.use('/api/post', postRoutes);
-app.use('/api/comment', commentRoutes);
-app.use('/api/category', categoryRoutes);
 
-app.use(errorHandler);
+app.use((error, req, res, next) => {
+    const status = error.statusCode || 500;
+    const message = error.message;
+    res.status(status).json({
+        message: message
+    });
+});
 
 module.exports = app;
