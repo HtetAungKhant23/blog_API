@@ -38,13 +38,13 @@ exports.signin = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({email});
     if(!user){
-        res.status(200).json({
+        return res.status(200).json({
             message: 'user not found!'
         });
     }
-    const passwordMatch = await bcrypt.compare(password, user.hashedPw);
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if(!passwordMatch){
-        res.status(200).json({
+        return res.status(200).json({
             message: 'password is not match!'
         });
     }
