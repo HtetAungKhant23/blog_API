@@ -1,6 +1,6 @@
 const User = require('../../models/user/userModel');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const generateToken = require('../../utils/generateJwt');
 
 exports.signup = async (req, res, next) => {
     try {
@@ -32,10 +32,25 @@ exports.signup = async (req, res, next) => {
     }
 }
 
-
 exports.signin = async (req, res, next) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({email});
+    if(!user){
+        res.status(200).json({
+            message: 'user not found!'
+        });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.hashedPw);
+    if(!passwordMatch){
+        res.status(200).json({
+            message: 'password is not match!'
+        });
+    }
 
-
-
-
+    res.status(200).json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        eamil: user.email,
+        token: generateToken(user._id)
+    });
 }
