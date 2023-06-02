@@ -123,16 +123,13 @@ exports.whoViewsMyProfile = async (req, res, next) => {
         const userWhoView = await User.findById(req.userAuth);
         if (user && userWhoView) {
             const isUserViewExist = user.viewers.find((viewer) => {
-                if(viewer.toString() === userWhoView._id.toJSON()){
-                    return true;
-                }
+                return viewer.toString() === userWhoView._id.toString();
             });
-            console.log(typeof isUserViewExist);
             if (isUserViewExist) {
                 const err = new Error('user is already viewd!');
                 throw err;
             } else {
-                user.viewers.push(userWhoView._id);
+                user.viewers = userWhoView._id;
                 await user.save();
                 res.status(200).json({
                     message: 'success',
@@ -141,9 +138,7 @@ exports.whoViewsMyProfile = async (req, res, next) => {
             }
         }
         throw new Error('user not found!');
-
     } catch (err) {
-        console.log('hi')
         if (!err.statusCode) {
             err.statusCode = 422;
         }
