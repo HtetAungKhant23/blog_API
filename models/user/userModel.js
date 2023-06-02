@@ -59,6 +59,9 @@ const userSchema = new Schema({
         type: String,
         enum: ['Bronze', 'Silver', 'Gold'],
         default: 'Bronze'
+    },
+    profilePhoto: {
+        type: String
     }
 }, {timestamps: true});
 

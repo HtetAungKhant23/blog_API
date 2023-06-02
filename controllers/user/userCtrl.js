@@ -42,7 +42,7 @@ exports.signin = async (req, res, next) => {
         const user = await User.findOne({ email });
         if (!user) {
             const err = new Error('user not found!');
-            err.statusCode = 200;
+            err.statusCode = 403;
             throw err;
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -71,14 +71,43 @@ exports.profile = async (req, res, next) => {
     try {
         const user = await User.findById(userId);
         if (!user) {
-            res.status(200).json({
-                message: 'user not found!'
-            });
+            const err = new Error('user not found!');
+            err.statusCode = 403;
+            throw err;
         }
         res.status(200).json({
             user: user
         });
     } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 422;
+        }
+        next(err);
+    }
+}
+
+exports.profilePhoto = async (req, res, next) => {
+    try{
+        const user = await User.findById(req.userAuth);
+        if(!user){
+            const err = new Error('user not found!');
+            err.statusCode = 403;
+            throw err;
+        }
+        if(user.isBlock){
+            const err = new Error('user is blocked!');
+            err.statusCode = 200;
+            throw err;
+        }
+        if(req.file){
+            user.profilePhoto = req.file.path;
+            res.status(200).json({
+                message: 'updated profile photo!',
+                user: user
+            })
+        }
+        
+    }catch(err){
         if (!err.statusCode) {
             err.statusCode = 422;
         }
