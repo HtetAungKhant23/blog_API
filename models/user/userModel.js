@@ -18,10 +18,6 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'password is required!']
     },
-    postCount: {
-        type: Number,
-        default: 0
-    },
     isBlock: {
         type: Boolean,
         default: false
@@ -34,26 +30,36 @@ const userSchema = new Schema({
         type: String,
         enum: ["Admin", "Guest", "Editor"]
     },
-    viewBy: {
+    viewers: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
-    },
-    followers: {
+    }],
+    followers: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
-    },
-    following: {
+    }],
+    following: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
-    },
-    active: {
-        type: Boolean,
-        default: true
-    },
+    }],
     posts: [{
         type: Schema.Types.ObjectId,
         ref: 'Post'
-    }]
+    }],
+    blocked: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    plan: [{
+        type: String,
+        enum: ['Free', 'Platinum', 'Pro'],
+        default: 'Free'
+    }],
+    userAward: {
+        type: String,
+        enum: ['Bronze', 'Silver', 'Gold'],
+        default: 'Bronze'
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', userSchema);

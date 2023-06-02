@@ -6,11 +6,11 @@ const getTokenFromHeader = require('../../utils/getToken');
 exports.signup = async (req, res, next) => {
     try {
         const { firstName, lastName, email, password } = req.body;
-        const existUser = await User.findOne({email: email});
-        if(existUser){
-            res.status(200).json({
-                message: 'email is already exist!'
-            })
+        const existUser = await User.findOne({ email: email });
+        if (existUser) {
+            const err = new Error('email is already exist!');
+            err.statusCode = 422;
+            throw err;
         }
 
         const salt = await bcrypt.genSalt(12);
@@ -29,7 +29,10 @@ exports.signup = async (req, res, next) => {
         });
 
     } catch (err) {
-        throw err;
+        if (!err.statusCode) {
+            err.statusCode = 422;
+        }
+        next(err);
     }
 }
 
@@ -38,15 +41,15 @@ exports.signin = async (req, res, next) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(200).json({
-                message: 'user not found!'
-            });
+            const err = new Error('user not found!');
+            err.statusCode = 200;
+            throw err;
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(200).json({
-                message: 'password is not match!'
-            });
+            const err = new Error('password not match!');
+            err.statusCode = 200;
+            throw err;
         }
 
         res.status(200).json({
@@ -56,7 +59,10 @@ exports.signin = async (req, res, next) => {
             token: generateToken(user._id)
         });
     } catch (err) {
-        throw err;
+        if (!err.statusCode) {
+            err.statusCode = 422;
+        }
+        next(err);
     }
 }
 
@@ -73,6 +79,9 @@ exports.profile = async (req, res, next) => {
             user: user
         });
     } catch (err) {
-        throw err;
+        if (!err.statusCode) {
+            err.statusCode = 422;
+        }
+        next(err);
     }
 }
