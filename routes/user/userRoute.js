@@ -10,10 +10,12 @@ const upload = multer({ storage });
 
 router.post('/signup', controller.signup);
 
-router.post('/signin', controller.signin);
+router.post('/signin', controller.signin);  
 
 router.get('/profile', isAuth, controller.profile);
 
 router.post('/profile-photo', isAuth, upload.single('profile'), controller.profilePhoto);
+
+router.get('/profile-viewers/:id', isAuth, controller.whoViewsMyProfile);
 
 module.exports = router;

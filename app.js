@@ -1,5 +1,5 @@
 const express = require('express');
-const { errHandler } = require('./middlewares/errHandler');
+const errHandler = require('./middlewares/errHandler');
 const { corsHandler } = require('./middlewares/corsHandler');
 
 const app = express();

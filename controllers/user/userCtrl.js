@@ -8,6 +8,7 @@ exports.signup = async (req, res, next) => {
         const { firstName, lastName, email, password } = req.body;
         const existUser = await User.findOne({ email: email });
         if (existUser) {
+            console.log(existUser);
             const err = new Error('email is already exist!');
             err.statusCode = 422;
             throw err;
@@ -29,6 +30,7 @@ exports.signup = async (req, res, next) => {
         });
 
     } catch (err) {
+        console.log(err);
         if (!err.statusCode) {
             err.statusCode = 422;
         }
@@ -108,6 +110,40 @@ exports.profilePhoto = async (req, res, next) => {
         }
         
     }catch(err){
+        if (!err.statusCode) {
+            err.statusCode = 422;
+        }
+        next(err);
+    }
+}
+
+exports.whoViewsMyProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        const userWhoView = await User.findById(req.userAuth);
+        if (user && userWhoView) {
+            const isUserViewExist = user.viewers.find((viewer) => {
+                if(viewer.toString() === userWhoView._id.toJSON()){
+                    return true;
+                }
+            });
+            console.log(typeof isUserViewExist);
+            if (isUserViewExist) {
+                const err = new Error('user is already viewd!');
+                throw err;
+            } else {
+                user.viewers.push(userWhoView._id);
+                await user.save();
+                res.status(200).json({
+                    message: 'success',
+                    user: user
+                })
+            }
+        }
+        throw new Error('user not found!');
+
+    } catch (err) {
+        console.log('hi')
         if (!err.statusCode) {
             err.statusCode = 422;
         }
