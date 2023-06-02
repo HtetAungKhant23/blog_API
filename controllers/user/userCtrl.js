@@ -129,7 +129,7 @@ exports.whoViewsMyProfile = async (req, res, next) => {
                 const err = new Error('user is already viewd!');
                 throw err;
             } else {
-                user.viewers = userWhoView._id;
+                user.viewers.push(userWhoView._id);
                 await user.save();
                 res.status(200).json({
                     message: 'success',
