@@ -117,8 +117,10 @@ exports.whoViewsMyProfile = async (req, res, next) => {
                 message: 'success',
                 user: user
             });
+        }else{
+            throw new Error('user not found!');
         }
-        throw new Error('user not found!');
+        
     } catch (err) {
         next(err);
     }
@@ -132,7 +134,6 @@ exports.following = async (req, res, next) => {
             const isAlreadyFollow = userToFollow.followers.find(follower => follower.toString() === userWhofollow._id.toString());
             if (isAlreadyFollow) {
                 const err = new Error('user already followed!');
-                console.log(err.message);
                 throw err;
             }
             userToFollow.followers.push(userWhofollow._id);
@@ -144,9 +145,11 @@ exports.following = async (req, res, next) => {
                 userToFollow,
                 userWhofollow
             });
+        }else{
+            const err = new Error('user not found!');
+            throw err;
         }
-        const err = new Error('user not found!');
-        throw err;
+        
     } catch (err) {
         next(err);
     }
@@ -171,9 +174,60 @@ exports.unFollowing = async (req, res, next) => {
                 userToUnFollow,
                 userWhoUnFollow
             });
+        }else{
+            const err = new Error('user not found!');
+            throw err;
         }
-        const err = new Error('user not found!');
-        throw err;
+        
+    } catch (err) {
+        next(err);
+    }
+}
+
+exports.blockUser = async (req, res, next) => {
+    try {
+        const userToBlock = await User.findById(req.params.id);
+        const userWhoBlock = await User.findById(req.userAuth);
+        if(userToBlock && userWhoBlock){
+            const isAlreadyBlock = userWhoBlock.blocked.find(block => block.toString() === userToBlock._id.toString());
+            if(isAlreadyBlock){
+                const err = new Error('user is already blocked!');
+                throw err;
+            }
+            userWhoBlock.blocked.push(userToBlock._id);
+            await userWhoBlock.save();
+            res.status(200).json({
+                message: 'user blocked successfully!',
+                userWhoBlock
+            })
+        }else{
+            throw new Error('user not found!');
+        }
+        
+    } catch (err) {
+        next(err);
+    }
+}
+
+exports.unblockUser = async (req, res, next) => {
+    try {
+        const userToUnblock = await User.findById(req.params.id);
+        const userWhoUnblock = await User.findById(req.userAuth);
+        if(userToUnblock && userWhoUnblock) {
+            const isAlreadyBlock = userWhoUnblock.blocked.find(block => block.toString() === userToUnblock._id.toString());
+            if(!isAlreadyBlock){
+                const err = new Error('user is not blocked yet!');
+                throw err;
+            }
+            userWhoUnblock.blocked = userWhoUnblock.blocked.filter(block => block.toString() !== userToUnblock._id.toString());
+            await userWhoUnblock.save();
+            res.status(200).json({
+                message: 'user unblock successfully!',
+                userWhoUnblock
+            });
+        }else{
+            throw new Error('user not found!');
+        }        
     } catch (err) {
         next(err);
     }

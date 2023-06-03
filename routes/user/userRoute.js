@@ -22,4 +22,8 @@ router.post('/following/:id', isAuth, controller.following);
 
 router.post('/unfollowing/:id', isAuth, controller.unFollowing);
 
+router.post('/block/:id', isAuth, controller.blockUser);
+
+router.post('/unblock/:id', isAuth, controller.unblockUser);
+
 module.exports = router;
