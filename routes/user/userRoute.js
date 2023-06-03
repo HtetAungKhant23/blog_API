@@ -18,4 +18,8 @@ router.post('/profile-photo', isAuth, upload.single('profile'), controller.profi
 
 router.get('/profile-viewers/:id', isAuth, controller.whoViewsMyProfile);
 
+router.post('/following/:id', isAuth, controller.following);
+
+router.post('/unfollowing/:id', isAuth, controller.unFollowing);
+
 module.exports = router;

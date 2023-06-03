@@ -1,6 +1,4 @@
 const server = require('./app');
-require('dotenv').config();
-const dbConnect = require('./configs/dbConnect');
 
 const start = async () => {
     try {
@@ -13,7 +11,7 @@ const start = async () => {
             console.log(`server is running at ${process.env.PORT} ...`);
         });
     } catch (err) {
-        console.log(err.message);
+        console.log("connection error", err);
     }
 }
 
