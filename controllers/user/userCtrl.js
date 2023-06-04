@@ -89,6 +89,7 @@ exports.profilePhoto = async (req, res, next) => {
         }
         if (req.file) {
             user.profilePhoto = req.file.path;
+            await user.save();
             res.status(200).json({
                 message: 'updated profile photo!',
                 user: user
@@ -231,4 +232,41 @@ exports.unblockUser = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+}
+
+exports.adminBlock = async (req, res, next) => {
+    try {
+        const userToBlock = await User.findById(req.params.id);
+        if(userToBlock.isBlock){
+            const err = new Error('user is already blocked!');
+            throw err;
+        }
+        userToBlock.isBlock = true;
+        await userToBlock.save();
+        res.status(200).json({
+            message: 'user blocked success by admin!',
+            userToBlock
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+exports.adminUnblock = async (req, res, next) => {
+    try {
+        const userToUnblock = await User.findById(req.params.id);
+        if(!userToUnblock.isBlock){
+            const err = new Error('user is not blocked yet!');
+            throw err;
+        }
+        userToUnblock.isBlock = false;
+        await userToUnblock.save();
+        res.status(200).json({
+            message: 'user unblocked success by admin!',
+            userToUnblock
+        });
+    } catch (err) {
+        next(err);
+    }
+
 }

@@ -4,10 +4,9 @@ const controller = require('../../controllers/user/userCtrl');
 const { isAuth } = require('../../middlewares/isAuth');
 const multer = require('multer');
 const storage = require('../../configs/cloudinary');
-const { isAdmin } = require('../../middlewares/isAdmin');
+const isAdmin = require('../../middlewares/isAdmin');
 
 const upload = multer({ storage });
-
 
 router.post('/signup', controller.signup);
 
@@ -23,8 +22,12 @@ router.post('/following/:id', isAuth, controller.following);
 
 router.post('/unfollowing/:id', isAuth, controller.unFollowing);
 
-router.post('/block/:id', isAuth, isAdmin, controller.blockUser);
+router.post('/block/:id', isAuth, controller.blockUser);
 
-router.post('/unblock/:id', isAuth, isAdmin, controller.unblockUser);
+router.post('/unblock/:id', isAuth, controller.unblockUser);
+
+router.put('/admin-block/:id', isAuth, isAdmin, controller.adminBlock);
+
+router.put('/admin-unblock/:id', isAuth, isAdmin, controller.adminUnblock);
 
 module.exports = router;
